@@ -1,0 +1,11 @@
+services:
+  chatbot:
+    build: .
+    image: docker-cluster-demo:latest
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      PLATFORM: Docker Compose
+    restart: unless-stopped
