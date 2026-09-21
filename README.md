@@ -1,33 +1,35 @@
 # Docker Cluster Demo
 
-En minimal svensk webbchatbot som kan köras i en vanlig Docker-container, med
-Docker Compose och i ett lokalt Kubernetes-kluster. Appen använder OpenAI
-Responses API när `OPENAI_API_KEY` är satt och `DEMO_MODE=false`. För verifiering
-utan en nyckel finns ett tydligt markerat demo-läge.
+A minimal web chatbot that can run as a regular Docker container, with Docker
+Compose, or in a local Kubernetes cluster. The application uses the OpenAI
+Responses API when `OPENAI_API_KEY` is configured and `DEMO_MODE=false`. A
+clearly marked demo mode is also available for testing without an API key.
 
-## Förutsättningar
+## Prerequisites
 
 - Docker Desktop
-- `kubectl` och aktiverat Kubernetes i Docker Desktop för del c
-- En OpenAI API-nyckel för riktiga AI-svar
+- `kubectl` and Kubernetes enabled in Docker Desktop for part c
+- An OpenAI API key for real AI responses
 
-## Förberedelser
+## Setup
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-För riktiga API-svar: fyll i `OPENAI_API_KEY` i `.env` och sätt
-`DEMO_MODE=false`. `.env` ignoreras av Git och kopieras inte in i imagen.
+To use the OpenAI API, add `OPENAI_API_KEY` to `.env` and set
+`DEMO_MODE=false`. The `.env` file is ignored by Git and is never copied into
+the Docker image.
 
-## a) Vanlig Docker-container
+## a) Regular Docker container
 
 ```powershell
 docker build -t docker-cluster-demo:latest .
 docker run --name chatbot-demo --rm -d -p 8080:8080 --env-file .env docker-cluster-demo:latest
 ```
 
-Öppna <http://localhost:8080>, testa chatboten och ta en skärmbild. Stäng sedan:
+Open <http://localhost:8080>, test the chatbot, and take a screenshot. Stop the
+container when finished:
 
 ```powershell
 docker stop chatbot-demo
@@ -39,16 +41,18 @@ docker stop chatbot-demo
 docker compose up --build -d
 ```
 
-Öppna <http://localhost:8080>, testa och ta en skärmbild. Stäng sedan:
+Open <http://localhost:8080>, test the chatbot, and take a screenshot. Stop and
+remove the Compose resources when finished:
 
 ```powershell
 docker compose down
 ```
 
-## c) Kubernetes i Docker Desktop
+## c) Kubernetes in Docker Desktop
 
-Aktivera Kubernetes i Docker Desktop under **Settings → Kubernetes**. Kontrollera
-att kontexten är `docker-desktop`, bygg imagen lokalt och applicera manifestet:
+Enable Kubernetes under **Docker Desktop → Settings → Kubernetes**. Confirm
+that the active context is `docker-desktop`, build the image locally, and
+apply the manifest:
 
 ```powershell
 kubectl config use-context docker-desktop
@@ -60,41 +64,43 @@ kubectl rollout status deployment/chatbot
 kubectl port-forward service/chatbot 8080:8080
 ```
 
-Medan `port-forward` kör: öppna <http://localhost:8080>, testa och ta en
-skärmbild. Avsluta `port-forward` med Ctrl+C och stäng sedan av arbetslasten:
+While the port-forward is running, open <http://localhost:8080>, test the
+chatbot, and take a screenshot. Stop the port-forward with Ctrl+C, then remove
+the workload and API secret:
 
 ```powershell
 kubectl delete -f k8s/chatbot.yaml
 kubectl delete secret chatbot-env
 ```
 
-Kontrollera att inga resurser är kvar:
+Confirm that no chatbot resources remain:
 
 ```powershell
 kubectl get pods,service -l app=chatbot
 ```
 
-Om även själva klustret ska stängas av: avmarkera **Enable Kubernetes** i
-Docker Desktop under **Settings → Kubernetes** och välj **Apply & restart**.
+To stop the Kubernetes cluster itself, clear **Enable Kubernetes** under
+**Docker Desktop → Settings → Kubernetes**, then select **Apply & restart**.
 
-Kubernetes läser API-inställningarna från `chatbot-env`, som skapas direkt från
-den Git-ignorerade `.env`-filen. Nyckeln skrivs därför aldrig direkt i YAML.
+Kubernetes loads the API configuration from the `chatbot-env` Secret, which is
+created from the Git-ignored `.env` file. The API key is never written directly
+to the Kubernetes manifest.
 
-## Hälsokontroll
+## Health check
 
 ```powershell
 curl.exe http://localhost:8080/health
 ```
 
-## Skärmbilder
+## Screenshots
 
-- [Vanlig Docker-container](screenshots/a-docker-container.png)
+- [Regular Docker container](screenshots/a-docker-container.png)
 - [Docker Compose](screenshots/b-docker-compose.png)
-- [Chatbot i Kubernetes](screenshots/c-kubernetes-chatbot.png)
+- [Chatbot running in Kubernetes](screenshots/c-kubernetes-chatbot.png)
 
-Skärmbilden av själva aktiveringen av Kubernetes tas i Docker Desktop när
-**Enable Kubernetes** slås på.
+The screenshot showing Kubernetes being enabled must be captured in Docker
+Desktop when **Enable Kubernetes** is selected.
 
-## Licens
+## License
 
-Projektet är tillgängligt under [MIT-licensen](LICENSE).
+This project is available under the [MIT License](LICENSE).
