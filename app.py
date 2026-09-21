@@ -29,32 +29,32 @@ def health():
 def chat():
     message = (request.get_json(silent=True) or {}).get("message", "").strip()
     if not message:
-        return jsonify(error="Skriv en fråga först."), 400
+        return jsonify(error="Enter a question first."), 400
 
     if is_demo_mode():
         return jsonify(
             answer=(
-                "Demo-svar: Appen tog emot din fråga: "
-                f"\u201d{message}\u201d. Lägg till OPENAI_API_KEY och stäng av "
-                "DEMO_MODE för att få svar från OpenAI API."
+                f'Demo response: The app received your question: "{message}". '
+                "Add OPENAI_API_KEY and disable DEMO_MODE to receive answers "
+                "from the OpenAI API."
             )
         )
 
     if not os.getenv("OPENAI_API_KEY"):
-        return jsonify(error="OPENAI_API_KEY saknas i containerns miljö."), 503
+        return jsonify(error="OPENAI_API_KEY is missing from the container environment."), 503
 
     try:
         base_url = os.getenv("OPENAI_BASE_URL", "").strip()
         client = OpenAI(**({"base_url": base_url} if base_url else {}))
         response = client.responses.create(
             model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
-            instructions="Svara kort, tydligt och på svenska.",
+            instructions="Answer briefly and clearly in English.",
             input=message,
         )
         return jsonify(answer=response.output_text)
     except Exception as exc:
-        app.logger.exception("OpenAI-anropet misslyckades")
-        return jsonify(error=f"API-anropet misslyckades: {exc}"), 502
+        app.logger.exception("OpenAI request failed")
+        return jsonify(error=f"API request failed: {exc}"), 502
 
 
 if __name__ == "__main__":

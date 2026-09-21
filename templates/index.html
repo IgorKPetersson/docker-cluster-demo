@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Containerkompisen</title>
+    <title>Container Chatbot</title>
     <style>
       :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
       * { box-sizing: border-box; }
@@ -28,16 +28,16 @@
   <body>
     <main>
       <header>
-        <h1>🤖 Containerkompisen</h1>
-        <p>En minimal chatbot i Docker och Kubernetes</p>
-        <span class="badge">{{ platform }} · {{ "DEMO-LÄGE" if demo_mode else "OPENAI API" }}</span>
+        <h1>Container Chatbot</h1>
+        <p>A minimal chatbot for Docker and Kubernetes</p>
+        <span class="badge">{{ platform }} · {{ "DEMO MODE" if demo_mode else "OPENAI API" }}</span>
       </header>
       <section id="messages" aria-live="polite">
-        <div class="message bot">Hej! Fråga mig något så skickar jag frågan vidare till chatbotens API.</div>
+        <div class="message bot">Hello! Ask me a question and I will send it to the chatbot API.</div>
       </section>
       <form id="chat-form">
-        <input id="question" aria-label="Din fråga" placeholder="Skriv en fråga …" autocomplete="off" required>
-        <button type="submit">Skicka</button>
+        <input id="question" aria-label="Your question" placeholder="Enter a question..." autocomplete="off" required>
+        <button type="submit">Send</button>
       </form>
     </main>
     <script>
@@ -68,9 +68,9 @@
             body: JSON.stringify({message})
           });
           const data = await response.json();
-          addMessage(data.answer || data.error || 'Något gick fel.', 'bot');
+          addMessage(data.answer || data.error || 'Something went wrong.', 'bot');
         } catch (_) {
-          addMessage('Kunde inte nå servern.', 'bot');
+          addMessage('Could not reach the server.', 'bot');
         } finally {
           button.disabled = false;
           input.focus();
