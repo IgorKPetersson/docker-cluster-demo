@@ -92,6 +92,26 @@ to the Kubernetes manifest.
 curl.exe http://localhost:8080/health
 ```
 
+## Chatbot evaluation
+
+This section and the evaluation files were added for homework-11. See
+[TESTING.md](TESTING.md) for an English guide to what was added and why.
+
+The eight machine-checked cases in [cases.json](cases.json) cover input validation,
+ordinary answers, English output, prompt injection, and attempts to extract the
+API key or hidden instructions. With `.env` configured for real API responses:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe run_evals.py --output final_run.json
+```
+
+The script uses Flask's HTTP test client against the app in this repository. It
+prints pass/fail for every case and saves only timing and pass/fail metadata;
+neither answers nor the key are saved. See [resultat.md](resultat.md) for the
+dated first and final runs. The script exits nonzero if any case fails.
+
 ## Screenshots
 
 - [Regular Docker container](screenshots/a-docker-container.png)
